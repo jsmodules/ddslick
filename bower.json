@@ -1,0 +1,22 @@
+{
+  "name": "ddslick",
+  "homepage": "https://github.com/jsmodules/ddslick",
+  "authors": [
+    "Prashant Chaudhary (http://designwithpc.com)",
+    "Brad Berger <brad@bradb.net> (https://bradb.net)"
+  ],
+  "description": "A free light weight jQuery plugin that allows you to create a custom drop down with images and description.",
+  "main": "jquery.ddslick.min.js",
+  "moduleType": [],
+  "license": "MPL-2.0",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.4"
+  }
+}

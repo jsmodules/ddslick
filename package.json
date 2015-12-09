@@ -1,0 +1,28 @@
+{
+  "name": "ddslick",
+  "version": "1.0.0",
+  "description": "A free light weight jQuery plugin that allows you to create a custom drop down with images and description.",
+  "main": "jquery.ddslick.js",
+  "scripts": {
+    "test": "gulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jsmodules/ddslick.git"
+  },
+  "author": "Brad Berger <brad@bradb.net>",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/jsmodules/ddslick/issues"
+  },
+  "homepage": "https://github.com/jsmodules/ddslick#readme",
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-eslint": "^1.1.1",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^1.5.1"
+  },
+  "dependencies": {
+    "jquery": "^2.1.4"
+  }
+}
