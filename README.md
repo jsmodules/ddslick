@@ -1,9 +1,9 @@
 # ddSlick
 
 [![Build Status](https://semaphoreci.com/api/v1/projects/b60c2732-c9e4-4fcf-b335-2b7ad6dcb4e8/628732/badge.svg)](https://semaphoreci.com/jsmodules/ddslick)
-[![Bower](https://img.shields.io/bower/v/jquery-ddslick.svg?style=flat-square)]()
-[![Bower](https://img.shields.io/bower/l/jquery-ddslick.svg?style=flat-square)]()
-[![npm](https://img.shields.io/npm/v/ddslick.svg?style=flat-square)]()
+[![Bower](https://img.shields.io/bower/v/jquery-ddslick.svg?style=flat-square)](http://bower.io/search/?q=ddslick)
+[![Bower](https://img.shields.io/bower/l/jquery-ddslick.svg?style=flat-square)](https://www.mozilla.org/en-US/MPL/2.0/)
+[![npm](https://img.shields.io/npm/v/ddslick.svg?style=flat-square)](https://www.npmjs.com/package/ddslick)
 
 A free light weight jQuery plug-in that allows you to create a custom drop down with images and description.
 
