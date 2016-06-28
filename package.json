@@ -1,6 +1,6 @@
 {
   "name": "ddslick",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A free light weight jQuery plugin that allows you to create a custom drop down with images and description.",
   "main": "jquery.ddslick.js",
   "scripts": {
@@ -11,6 +11,9 @@
     "url": "git+https://github.com/jsmodules/ddslick.git"
   },
   "author": "Brad Berger <brad@bradb.net>",
+  "contributors": [
+    "Oier Izulain <oizulain@gmail.com> (https://github.com/oizulain)"
+  ],
   "license": "MPL-2.0",
   "bugs": {
     "url": "https://github.com/jsmodules/ddslick/issues"
@@ -24,5 +27,6 @@
   },
   "dependencies": {
     "jquery": "^2.1.4"
-  }
+  },
+  "keywords": ["jquery", "ddslick", "custom", "dropdown", "plugin", "image"]
 }

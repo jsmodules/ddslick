@@ -5,7 +5,11 @@
         "linebreak-style": [2, "unix"],
         "semi": [2, "always"]
     },
-    "globals": { },
+    "globals": {
+        "define" : true,
+        "module" : true,
+        "require" : true
+    },
     "env": {
         "browser": true,
         "jquery": true

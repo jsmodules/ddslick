@@ -1,4 +1,17 @@
-(function($) {
+(function (factory) {
+
+    if (typeof define === "function" && define.amd) {
+        /** AMD. Register as an anonymous module. */
+        define(["jquery"], factory);
+    } else if (typeof module === "object" && module.exports) {
+        /** Node/CommonJS */
+        module.exports = factory(require("jquery"));
+    } else {
+        /** Browser globals */
+        factory(window.jQuery);
+    }
+
+}(function ($) {
 
     $.fn.ddslick = function (method) {
         if (methods[method]) {
@@ -11,9 +24,11 @@
     };
 
     var methods = {};
+    var settingsMap = {};
     var defaults = {
         data: [],
         keepJSONItemsOnTop: false,
+        animationTime: 50,
         width: 260,
         height: null,
         background: "#eee",
@@ -27,6 +42,7 @@
         onSelected: function() { }
     };
 
+    var closeListenerInitialized = false;
     var ddSelectHtml = "<div class='dd-select'><input class='dd-selected-value' type='hidden' /><a class='dd-selected'></a><span class='dd-pointer dd-pointer-down'></span></div>";
     var ddOptionsHtml = "<ul class='dd-options'></ul>";
 
@@ -90,9 +106,15 @@
                 else options.data = $.merge(ddSelect, options.data);
 
                 //Replace HTML select with empty placeholder, keep the original
-                var original = obj, placeholder = $("<div>").attr("id", obj.attr("id") + "-dd-placeholder");
+                var original = obj, placeholder = $("<div>").attr("id", obj.attr("id"));
                 obj.replaceWith(placeholder);
                 obj = placeholder;
+
+                // Save options
+                var settingsId = "ID_" + (new Date()).getTime();
+                $(obj).attr("data-settings-id", settingsId);
+                settingsMap[settingsId] = {};
+                $.extend(settingsMap[settingsId], options);
 
                 //Add classes and append ddSelectHtml & ddOptionsHtml to the container
                 obj.addClass("dd-container").append(ddSelectHtml).append(ddOptionsHtml);
@@ -112,7 +134,7 @@
                 obj.css({ width: options.width });
 
                 //Set height
-                if (options.height != null)
+                if (options.height !== null)
                     ddOptions.css({ height: options.height, overflow: "auto" });
 
                 //Add ddOptions to the container. Replace with template engine later.
@@ -121,7 +143,7 @@
                     ddOptions.append("<li>" +
                         "<a class='dd-option'>" +
                             (item.value ? " <input class='dd-option-value' type='hidden' value='" + item.value + "' />" : "") +
-                            (item.imageSrc ? " <img class='dd-option-image'" + (options.imagePosition == "right" ? " dd-image-right" : "") + "' src='" + item.imageSrc + "' />" : "") +
+                            (item.imageSrc ? " <img class='dd-option-image'" + (options.imagePosition === "right" ? " dd-image-right" : "") + "' src='" + item.imageSrc + "' />" : "") +
                             (item.text ? " <label class='dd-option-text'>" + item.text + "</label>" : "") +
                             (item.description ? " <small class='dd-option-description dd-desc'>" + item.description + "</small>" : "") +
                         "</a>" +
@@ -140,14 +162,14 @@
                 obj.data("ddslick", pluginData);
 
                 //Check if needs to show the select text, otherwise show selected or default selection
-                if (options.selectText.length > 0 && options.defaultSelectedIndex == null) {
+                if (options.selectText.length > 0 && options.defaultSelectedIndex === null) {
                     obj.find(".dd-selected").html(options.selectText);
                 }
                 else {
                     var index = (options.defaultSelectedIndex != null && options.defaultSelectedIndex >= 0 && options.defaultSelectedIndex < options.data.length)
                                 ? options.defaultSelectedIndex
                                 : 0;
-                    selectIndex(obj, index);
+                    selectIndex(obj, index, false);
                 }
 
                 //EVENTS
@@ -158,17 +180,21 @@
 
                 //Selecting an option
                 obj.find(".dd-option").on("click.ddslick", function() {
-                    selectIndex(obj, $(this).closest("li").index());
+                    selectIndex(obj, $(this).closest("li").index(), true);
                 });
 
                 //Click anywhere to close
                 if (options.clickOffToClose) {
                     ddOptions.addClass("dd-click-off-close");
                     obj.on("click.ddslick", function (e) { e.stopPropagation(); });
-                    $("body").on("click", function() {
-                        $(".dd-open").removeClass("dd-open");
-                        $(".dd-click-off-close").slideUp(50).siblings(".dd-select").find(".dd-pointer").removeClass("dd-pointer-up");
-                    });
+                    // Close listener needs to be added only once
+                    if(!closeListenerInitialized) {
+                        closeListenerInitialized = true;
+                        $("body").on("click", function () {
+                            $(".dd-open").removeClass("dd-open");
+                            $(".dd-click-off-close").slideUp(options.animationTime).siblings(".dd-select").find(".dd-pointer").removeClass("dd-pointer-up");
+                        });
+                    }
                 }
             }
         });
@@ -177,9 +203,9 @@
     //Public method to select an option by its index
     methods.select = function (options) {
         return this.each(function() {
-            if (options.index!==undefined)
+            if (options.index !== undefined)
                 selectIndex($(this), options.index);
-            if (options.id)
+            if (options.id !== undefined)
                 selectId($(this), options.id);
         });
     };
@@ -222,14 +248,14 @@
         });
     };
 
-     //Private: Select id
+    //Private: Select id
     function selectId(obj, id) {
         var index = obj.find(".dd-option-value[value= '" + id + "']").parents("li").prevAll().length;
         selectIndex(obj, index);
     }
 
     //Private: Select index
-    function selectIndex(obj, index) {
+    function selectIndex(obj, index, callbackOnSelection) {
 
         //Get plugin data
         var pluginData = obj.data("ddslick");
@@ -254,13 +280,13 @@
         //If set to display to full html, add html
         if (settings.showSelectedHTML) {
             ddSelected.html(
-                    (selectedData.imageSrc ? "<img class='dd-selected-image'" + (settings.imagePosition == "right" ? " dd-image-right" : "") + "' src='" + selectedData.imageSrc + "' />" : "") +
+                    (selectedData.imageSrc ? "<img class='dd-selected-image'" + (settings.imagePosition === "right" ? " dd-image-right" : "") + "' src='" + selectedData.imageSrc + "' />" : "") +
                     (selectedData.text ? "<label class='dd-selected-text'>" + selectedData.text + "</label>" : "") +
                     (selectedData.description ? "<small class='dd-selected-description dd-desc'" + (settings.truncateDescription ? " dd-selected-description-truncated" : "") + "' >" + selectedData.description + "</small>" : "")
                 );
 
         }
-            //Else only display text as selection
+        //Else only display text as selection
         else ddSelected.html(selectedData.text);
 
         //Updating selected option value
@@ -277,7 +303,7 @@
         adjustSelectedHeight(obj);
 
         //Callback function on selection
-        if (typeof settings.onSelected == "function") {
+        if (callbackOnSelection && typeof settings.onSelected == "function") {
             settings.onSelected.call(this, pluginData);
         }
     }
@@ -288,21 +314,22 @@
         var $this = obj.find(".dd-select"),
             ddOptions = $this.siblings(".dd-options"),
             ddPointer = $this.find(".dd-pointer"),
-            wasOpen = ddOptions.is(":visible");
+            wasOpen = ddOptions.is(":visible"),
+            settings = settingsMap[obj.attr("data-settings-id")];
 
         //Close all open options (multiple plugins) on the page
-        $(".dd-click-off-close").not(ddOptions).slideUp(50);
+        $(".dd-click-off-close").not(ddOptions).slideUp(settings.animationTime);
         $(".dd-pointer").removeClass("dd-pointer-up");
         $this.removeClass("dd-open");
 
         if (wasOpen) {
-            ddOptions.slideUp("fast");
+            ddOptions.slideUp(settings.animationTime);
             ddPointer.removeClass("dd-pointer-up");
             $this.removeClass("dd-open");
         }
         else {
             $this.addClass("dd-open");
-            ddOptions.slideDown("fast");
+            ddOptions.slideDown(settings.animationTime);
             ddPointer.addClass("dd-pointer-up");
         }
 
@@ -313,8 +340,9 @@
     //Private: Close the drop down options
     function close(obj) {
         //Close drop down and adjust pointer direction
+        var settings = settingsMap[obj.attr("data-settings-id")];
         obj.find(".dd-select").removeClass("dd-open");
-        obj.find(".dd-options").slideUp(50);
+        obj.find(".dd-options").slideUp(settings.animationTime);
         obj.find(".dd-pointer").removeClass("dd-pointer-up").removeClass("dd-pointer-up");
     }
 
@@ -342,7 +370,7 @@
             if (descriptionOption.length <= 0 && imgOption.length > 0) {
                 $this.find(".dd-option-text").css("lineHeight", lOHeight);
             }
-        }); 
+        });
     }
 
-})(jQuery);
+}));
