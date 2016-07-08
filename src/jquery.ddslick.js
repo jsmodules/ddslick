@@ -205,8 +205,10 @@
         return this.each(function() {
             if (options.index !== undefined)
                 selectIndex($(this), options.index);
+            if (options.value !== undefined)
+                selectValue($(this), options.value);
             if (options.id !== undefined)
-                selectId($(this), options.id);
+                selectValue($(this), options.id);
         });
     };
 
@@ -248,9 +250,9 @@
         });
     };
 
-    //Private: Select id
-    function selectId(obj, id) {
-        var index = obj.find(".dd-option-value[value= '" + id + "']").parents("li").prevAll().length;
+    //Private: Select by value
+    function selectValue(obj, value) {
+        var index = obj.find(".dd-option-value[value= '" + value + "']").parents("li").prevAll().length;
         selectIndex(obj, index);
     }
 

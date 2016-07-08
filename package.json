@@ -1,6 +1,6 @@
 {
   "name": "ddslick",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A free light weight jQuery plugin that allows you to create a custom drop down with images and description.",
   "main": "jquery.ddslick.js",
   "scripts": {
