@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>ddSlick demos</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<!-- <script src="http://ajax.aspnetcdn.com/ajax/modernizr/modernizr-2.0.6-development-only.js"></script> -->
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/prettify/188.0.0/prettify.js"></script>
+<link href="http://fonts.googleapis.com/css?family=PT+Sans+Narrow:regular,bold&amp;v1" rel="stylesheet">
+
+<style>
+    html, body {
+        font-family: sans-serif;
+        font-size: 14px;
+    }
+
+    body {
+        background: #eee;
+        margin: 0;
+        padding: 0;
+        color: #222;
+    }
+
+    input, textarea, select, button {
+        font-size: 1rem;
+    }
+
+    section, article {
+        display: block;
+    }
+
+    section {
+        padding: 15px 0;
+        line-height: 1.6em;
+        text-shadow: 0 1px 0.5px #fff;
+    }
+
+    h1, h2, h3, h4, h5 {
+        font-family: "PT Sans Narrow", sans-serif;
+    }
+
+    h1 {
+        font-size: 60px;
+        text-align: center;
+    }
+
+    h2 {
+        font-size: 34px;
+    }
+
+    h3 {
+        font-size: 28px;
+    }
+
+    code {
+        background: #CCDCE6;
+        padding: 1px;
+    }
+
+    small {
+        color: #777;
+    }
+
+    a {
+        color: #2A9933;
+    }
+
+    #showSampleData, #showSampleSelectList {
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    .wrapper {
+        width: 960px;
+        margin: 0 auto;
+    }
+
+    .spacer {
+        height: 20px;
+        width: 100%;
+        clear: both;
+    }
+
+    .button-basic {
+        border: solid 1px #888 !important;
+        background: #eee;
+        background: -moz-linear-gradient(center top, #fff, #ddd) repeat scroll 0 0 transparent;
+        background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ddd));
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#ffffff", endColorstr="#dddddd");
+        border-radius: 3px;
+        cursor: pointer;
+        padding: 10px;
+        text-decoration: none;
+        color: #333;
+        font-size: 1rem;
+    }
+
+    .button-basic:active {
+        background: #bbb;
+        background: -moz-linear-gradient(center top, #ccc, #eee) repeat scroll 0 0 transparent;
+        background: -webkit-gradient(linear, left top, left bottom, from(#ccc), to(#eee));
+        filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#cccccc", endColorstr="#eeeeee");
+    }
+
+    .button-basic:hover {
+        border-color: #333 !important;
+    }
+
+    .demo-content {
+        width: 100%;
+        background: #dadada;
+        border: solid 2px #ddd;
+        font-size: 1rem;
+    }
+
+    .demo-live {
+        padding: 20px;
+        background: #fff;
+        line-height: 1.4em;
+        min-height: 260px;
+    }
+
+    article {
+        margin: 20px 0 30px;
+    }
+
+    article.half-l {
+        width: 48%;
+        float: left;
+        margin-right: 2%;
+    }
+
+    article.half-r {
+        width: 48%;
+        float: left;
+        margin-left: 2%;
+    }
+
+    article.full {
+        float: left;
+        width: 100%;
+    }
+
+    article h3 {
+        margin: 0;
+        padding: 0 0 15px 0;
+    }
+
+    .demo-index {
+        color: #fff;
+        background: #459644;
+        padding: 10px;
+        margin-right: 10px;
+        border-radius: 30px;
+        float: left;
+        height: 20px;
+        width: 20px;
+        text-align: center;
+        font-size: 24px;
+        text-shadow: 0 1px 1px #333;
+        margin-top: -10px;
+    }
+
+    .weak {
+        color: #888;
+    }
+
+    #options .weak {
+        font-style: italic;
+    }
+
+    #options li {
+        padding: 7px 0;
+    }
+
+    .clearfix {
+        clear: both;
+    }
+
+    li.separator {
+        list-style: none;
+        color: maroon;
+    }
+
+    .dd-selected {
+        color: #000000;
+    }
+
+    #dd-display-data {
+        height: 230px;
+        overflow: auto;
+    }
+
+    #dd-modal {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        height: 280px;
+        width: 500px;
+        margin-top: -140px;
+        margin-left: -250px;
+        background: #303030;
+        border: solid 15px rgba(0,0,0,0.4);
+        background-clip: padding-box;
+        border-radius: 5px;
+        z-index: 20000;
+        padding: 20px;
+        color: #fff;
+        text-shadow: none;
+        line-height: 1.5em;
+    }
+
+    #close-modal {
+        margin-left: 200px;
+        width: 100px;
+        padding: 5px;
+    }
+
+    #top-share {
+        float: right;
+    }
+    /* Pretty printing styles. Used with prettify.js. */
+    /* Vim sunburst theme by David Leibovic */
+
+    pre .str, code .str {
+        color: #65B042;
+    }
+    /* string  - green */
+    pre .kwd, code .kwd {
+        color: #E28964;
+    }
+    /* keyword - dark pink */
+    pre .com, code .com {
+        color: #AEAEAE;
+        font-style: italic;
+    }
+    /* comment - gray */
+    pre .typ, code .typ {
+        color: #89bdff;
+    }
+    /* type - light blue */
+    pre .lit, code .lit {
+        color: #3387CC;
+    }
+    /* literal - blue */
+    pre .pun, code .pun {
+        color: #fff;
+    }
+    /* punctuation - white */
+    pre .pln, code .pln {
+        color: #fff;
+    }
+    /* plaintext - white */
+    pre .tag, code .tag {
+        color: #89bdff;
+    }
+    /* html/xml tag    - light blue */
+    pre .atn, code .atn {
+        color: #bdb76b;
+    }
+    /* html/xml attribute name  - khaki */
+    pre .atv, code .atv {
+        color: #65B042;
+    }
+    /* html/xml attribute value - green */
+    pre .dec, code .dec {
+        color: #3387CC;
+    }
+    /* decimal - blue */
+
+    pre.prettyprint, code.prettyprint {
+        background-color: #444;
+        text-shadow: none;
+        font-size: 1rem;
+        line-height: 1.6em;
+        border-radius: 3px;
+    }
+
+    pre.prettyprint {
+        width: 95%;
+        margin: 16px auto;
+        padding: 1em;
+        white-space: pre-wrap;
+    }
+
+    /* Specify class=linenums on a pre to get line numbering */
+    ol.linenums {
+        margin-top: 0;
+        margin-bottom: 0;
+        color: #AEAEAE;
+    }
+    /* IE indents via margin-left */
+    li.L0, li.L1, li.L2, li.L3, li.L5, li.L6, li.L7, li.L8 {
+        list-style-type: none;
+    }
+    /* Alternate shading for lines */
+    li.L1, li.L3, li.L5, li.L7, li.L9 {
+    }
+
+    @media print {
+        pre .str, code .str {
+            color: #060;
+        }
+
+        pre .kwd, code .kwd {
+            color: #006;
+            font-weight: bold;
+        }
+
+        pre .com, code .com {
+            color: #600;
+            font-style: italic;
+        }
+
+        pre .typ, code .typ {
+            color: #404;
+            font-weight: bold;
+        }
+
+        pre .lit, code .lit {
+            color: #044;
+        }
+
+        pre .pun, code .pun {
+            color: #440;
+        }
+
+        pre .pln, code .pln {
+            color: #000;
+        }
+
+        pre .tag, code .tag {
+            color: #006;
+            font-weight: bold;
+        }
+
+        pre .atn, code .atn {
+            color: #404;
+        }
+
+        pre .atv, code .atv {
+            color: #060;
+        }
+    }
+</style>
+
+</head>
+<body onload="prettyPrint();">
+    <section class="wrapper">
+        <section>
+            <h1>
+                ddSlick demos
+            </h1>
+            <article class="half-l">
+                <h3>
+                    <span class="demo-index">1</span>
+                    Basic dropdown using JSON
+                </h3>
+                <div class="demo-content">
+                    <div class="demo-live">
+                        <div id="demoBasic">
+                        </div>
+                        <div class="spacer">
+                        </div>
+                    </div>
+                </div>
+            </article>
+            <article class="half-r">
+                Source:
+<pre class="prettyprint">
+$("#demoBasic").ddslick({
+    data: ddData,
+    width: 300,
+    imagePosition: "left",
+    selectText: "Select your favorite social network",
+    onSelected: function (data) {
+        console.log(data);
+    }
+});
+</pre>
+                <p>
+                    When using JSON to populate, the plugin requires the specific data format.<a id="showSampleData">
+                        Click here to see the sample JSON data for the plugin.
+                    </a>
+                </p>
+            </article>
+            <div class="clearfix">
+            </div>
+            <article class="half-l">
+                <h3>
+                    <span class="demo-index">2</span>
+                    Render from HTML select options
+                </h3>
+                <div class="demo-content">
+                    <div class="demo-live">
+                        <select id="demo-htmlselect">
+                            <option value="0" data-imagesrc="http://i.imgur.com/XkuTj3B.png" data-description="Description with Facebook">Facebook</option>
+                            <option value="1" data-imagesrc="http://i.imgur.com/8ScLNnk.png" data-description="Description with Twitter">Twitter</option>
+                            <option value="2" data-imagesrc="http://i.imgur.com/aDNdibj.png" data-description="Description with LinkedIn">LinkedIn</option>
+                            <option value="3" data-imagesrc="http://i.imgur.com/kFAk2DX.png" data-description="Description with Foursquare">Foursquare</option>
+                        </select>
+                        <div class="spacer">
+                        </div>
+                        <button id="make-it-slick">
+                            Make it slick!
+                        </button>
+                        <button id="restore">
+                            Restore to Original
+                        </button>
+                    </div>
+                </div>
+            </article>
+            <article class="half-r">
+                Source:
+<pre class="prettyprint">
+//Make it slick!
+$("#make-it-slick").on("click", function(){
+    $("#demo-htmlselect").ddslick();
+});
+//Restore Original
+$("#restore").on("click", function(){
+    $("#demo-htmlselect").ddslick("destroy");
+});
+</pre>
+                <p>
+                    Use HTML5 data attributes <code>data-imagesrc</code> and <code>data-description</code>
+                    with your regular HTML select elements to add images and description. The plugin
+                    will retrieve <code>text</code>, <code>value</code>, and <code>selected</code> attributes
+                    from the elements itself.<br />
+                    <a id="showSampleSelectList">Click here to see the HTML select element for this example.</a>
+                </p>
+            </article>
+            <div class="clearfix">
+            </div>
+            <article class="half-l">
+                <h3>
+                    <span class="demo-index">3</span>
+                    GET selected dropdown option
+                </h3>
+                <div class="demo-content">
+                    <div class="demo-live">
+                        <div id="demoShowSelected">
+                        </div>
+                        <div class="spacer">
+                        </div>
+                        <button id="showSelectedData">
+                            Get Selection
+                        </button>
+                    </div>
+                </div>
+            </article>
+            <article class="half-r">
+                Source:
+<pre class="prettyprint">
+$("#demoShowSelected").ddslick({
+    data: ddData,
+    selectText: "Select your favorite social network",
+});
+$("#showSelectedData").on("click", function () {
+    var ddData = $("#demoShowSelected").data("ddslick");
+    displaySelectedData("2: Getting Selected Dropdown Data" , ddData);
+});
+</pre>
+                <p>
+                    You may use jquery .data() with your selector to get data from plugin. <code>$("#demoShowSelected").data("ddslick");</code>
+                    will return a js object that contains:
+                </p>
+                <ul>
+                    <li>selectedIndex <span class="weak">(0 based),</span></li>
+                    <li>selectedItem <span class="weak">(HTML "li" element),</span></li>
+                    <li>selectedData <span class="weak">(nested object with text, value, description, imageSrc)</span></li>
+                </ul>
+            </article>
+            <div class="clearfix">
+            </div>
+            <article class="half-l">
+                <h3>
+                    <span class="demo-index">4</span>
+                    SET selected dropdown option
+                </h3>
+                <div class="demo-content">
+                    <div class="demo-live">
+                        <p id="setIndexMsg">
+                            Try an index between 0 to 3
+                        </p>
+                        <input type="text" id="setIndex" value="3" />
+                        <button id="btnSetSelected">
+                            Set Selection
+                        </button>
+                        <div class="spacer">
+                        </div>
+                        <div id="demoSetSelected">
+                        </div>
+                    </div>
+                </div>
+            </article>
+            <article class="half-r">
+                Source:
+<pre class="prettyprint">
+$("#demoSetSelected").ddslick({
+    data: ddData,
+    selectText: "Select your favorite social network"
+});
+$("#btnSetSelected").on("click", function () {
+    var i = $("#setIndex").val();
+    if(i &gt;= 0 &amp;&amp; i &lt;5)
+       $("#demoSetSelected").ddslick("select", {index: i });
+    else
+       $("#setIndexMsg").effect("highlight",2400);
+});
+</pre>
+                <p>
+                    You may use plugin’s select method like <code>
+                        $("#demoSetSelected").ddslick("select",
+                        {index: i });
+                    </code><br />
+                    to select a particular index.
+                </p>
+
+            </article>
+            <div class="clearfix">
+            </div>
+            <article class="half-l">
+                <h3>
+                    <span class="demo-index">5</span>
+                    onSelected callback function
+                </h3>
+                <div class="demo-content">
+                    <div class="demo-live">
+                        <div id="demoCallback">
+                        </div>
+                    </div>
+                </div>
+            </article>
+            <article class="half-r">
+                Source:
+<pre class="prettyprint">
+$("#demoCallback").ddslick({
+    data: ddData,
+    selectText: "Select your favorite social network",
+    onSelected: function(data){
+        displaySelectedData("3: Callback Function on Dropdown Selection" , data);
+    }
+});
+</pre>
+                <p>
+                    Use plugin’s <code>onSelected</code> callback function on selecting one of the drop
+                    down options. The callback data will include:
+                </p>
+                <ul>
+                    <li>selectedIndex <span class="weak">(0 based),</span></li>
+                    <li>selectedItem <span class="weak">(HTML "li" element),</span></li>
+                    <li>selectedData <span class="weak">(nested object with text, value, description, imageSrc)</span></li>
+                </ul>
+            </article>
+            <div class="clearfix">
+            </div>
+            <article class="half-l">
+                <h3>
+                    <span class="demo-index">6</span>
+                    Dropdown with default selection
+                </h3>
+                <div class="demo-content">
+                    <div class="demo-live">
+                        <div id="demoDefaultSelection">
+                        </div>
+                    </div>
+                </div>
+            </article>
+            <article class="half-r">
+                Source:
+<pre class="prettyprint">
+$("#demoDefaultSelection").ddslick({
+    data: ddData,
+    defaultSelectedIndex:2
+});
+</pre>
+                <p>
+                    Use Zero based plugin option
+                    <code>defaultSelectedIndex</code> to set up plugin
+                    to pre select the index, when first initializing.
+                    <br />
+                    <strong>Note:</strong> When there is no <code>selectText</code> the plugin selects
+                    the first item index[0] from dropdown options.
+                </p>
+            </article>
+            <div class="clearfix">
+            </div>
+            <article class="half-l">
+                <h3>
+                    <span class="demo-index">7</span>
+                    Dropdown with image on right
+                </h3>
+                <div class="demo-content">
+                    <div class="demo-live">
+                        <div id="demoImageRight">
+                        </div>
+                    </div>
+                </div>
+            </article>
+            <article class="half-r">
+                Source:
+<pre class="prettyprint">
+$("#demoImageRight").ddslick({
+    data: ddData,
+    imagePosition:"right",
+    selectText: "Select your favorite social network"
+});
+</pre>
+                <p>
+                    You have the flexibility to position image either on left or right using <code>imagePosition</code>,
+                    depending on your preference.
+                    <br />
+                    Also you can add your own styles to these images by modifying their CSS class <code>
+                        .dd-option-image, .dd-selected-image
+                    </code> on your page. For e.g. plugin sets
+                    the default max-width for images to 64px, that you can overwrite by adding these
+                    classes to your page and overwriting max-width style.
+                </p>
+            </article>
+            <div class="clearfix">
+            </div>
+            <article class="half-l">
+                <h3>
+                    <span class="demo-index">8</span>
+                    Dropdown with truncated description
+                </h3>
+                <div class="demo-content">
+                    <div class="demo-live">
+                        <div id="demoTruncated">
+                        </div>
+                    </div>
+                </div>
+            </article>
+            <article class="half-r">
+                Source:
+<pre class="prettyprint">
+$("#demoTruncated").ddslick({
+    data: ddDataLongDescription,
+    selectText: "Select your favorite social network",
+    truncateDescription: true,
+    onSelected: function(data){
+        displaySelectedData("5: Dropdown with truncated description", data);
+    }
+});
+</pre>
+                <p>
+                    By default plugin will truncate the description in selected view if it overflows.
+                    You may however turn the default behavior by setting <code>truncateDescription:false</code>
+                    to show the complete description. Either way you still get the complete description
+                    with returned selected data. Also use <code>.dd-desc</code> to add your own styles
+                    to description.
+                </p>
+            </article>
+            <div class="clearfix">
+            </div>
+            <article class="half-l">
+                <h3>
+                    <span class="demo-index">9</span>
+                    Dropdown with no image or description
+                </h3>
+                <div class="demo-content">
+                    <div class="demo-live">
+                        <div id="divNoImage">
+                        </div>
+                    </div>
+                </div>
+            </article>
+            <article class="half-r">
+                Source:
+<pre class="prettyprint">
+var ddBasic = [
+    { text: "Facebook", value: 1, },
+    { text: "Twitter", value: 2, },
+    { text: "LinkedIn", value: 3, },
+    { text: "Foursquare", value: 4, }
+];
+$("#divNoImage").ddslick({
+    data: ddBasic,
+    selectText: "Select your favorite social network"
+});
+</pre>
+                <p>
+                    The plugin is built to work as beautiful even without images!
+                </p>
+            </article>
+            <div class="clearfix">
+            </div>
+        </section>
+    <div class="clearfix"></div>
+    <div id="dd-modal">
+        <div id="dd-display-data"></div>
+        <br />
+        <button id="close-modal" class="button-basic">
+            Close
+        </button>
+    </div>
+
+    <!-- USAGE Section -->
+
+    <section>
+
+        <article>
+            <h2>How to use with JSON data</h2>
+            <ol>
+                <li>
+                    Include the plugin javascript file along with jquery:
+<pre class="prettyprint">
+&lt;script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript" src="https://cdn.rawgit.com/jsmodules/ddslick/master/dist/jquery.ddslick.min.js" &gt;&lt;/script&gt;
+</pre>
+                </li>
+                <li>
+                    Create an empty placeholder for the custom dropdown: eg:
+<pre class="prettyprint">
+&lt;div id="myDropdown"&gt;&lt;/div&gt;
+</pre>
+                </li>
+                <li>
+                    Get the dropdown options (JSON Data) to be binded to plugin:
+<pre class="prettyprint" id="JSONData">
+//Dropdown plugin data
+var ddData = [
+    {
+        text: "Facebook",
+        value: 1,
+        selected: false,
+        description: "Description with Facebook",
+        imageSrc: "http://i.imgur.com/XkuTj3B.png"
+    },
+    {
+        text: "Twitter",
+        value: 2,
+        selected: false,
+        description: "Description with Twitter",
+        imageSrc: "http://i.imgur.com/8ScLNnk.png"
+    },
+    {
+        text: "LinkedIn",
+        value: 3,
+        selected: true,
+        description: "Description with LinkedIn",
+        imageSrc: "http://i.imgur.com/aDNdibj.png"
+    },
+    {
+        text: "Foursquare",
+        value: 4,
+        selected: false,
+        description: "Description with Foursquare",
+        imageSrc: "http://i.imgur.com/kFAk2DX.png"
+    }
+];
+</pre>
+                </li>
+                <li>
+                    Attach plugin to this placeholder like:
+<pre class="prettyprint">
+$("#myDropdown").ddslick({
+    data:ddData,
+    width:300,
+    selectText: "Select your preferred social network",
+    imagePosition:"right",
+    onSelected: function(selectedData){
+        //callback function: do something with selectedData;
+    }
+});
+</pre>
+                    Note: Use onSelected callback function to do something after the dropdown option is selected. The selectedData will contain the selected text, value, description, imageSrc.
+                </li>
+            </ol>
+        </article>
+        <div class="spacer"></div>
+        <article>
+            <h2>How to use with HTML &lt;select&gt; and &lt;option&gt;</h2>
+            <ol>
+                <li>
+                    Include the plugin javascript file along with jquery:
+<pre class="prettyprint">
+&lt;script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript" src="https://cdn.rawgit.com/jsmodules/ddslick/master/dist/jquery.ddslick.min.js" &gt;&lt;/script&gt;
+</pre>
+                </li>
+                <li>
+                    Add HTML5 data attributes to your select elements: eg:
+<pre class="prettyprint" id="sampleHtmlSelect">
+&lt;select id="demo-htmlselect"&gt;
+    &lt;option value="0" data-imagesrc="http://i.imgur.com/XkuTj3B.png"
+        data-description="Description with Facebook"&gt;Facebook&lt;/option&gt;
+    &lt;option value="1" data-imagesrc="http://i.imgur.com/8ScLNnk.png"
+        data-description="Description with Twitter"&gt;Twitter&lt;/option&gt;
+    &lt;option value="2" selected="selected" data-imagesrc="http://i.imgur.com/aDNdibj.png"
+        data-description="Description with LinkedIn"&gt;LinkedIn&lt;/option&gt;
+    &lt;option value="3" data-imagesrc="http://i.imgur.com/kFAk2DX.png"
+        data-description="Description with Foursquare"&gt;Foursquare&lt;/option&gt;
+&lt;/select&gt;
+</pre>
+                </li>
+                <li>
+                    Attach plugin to this HTML select element:
+<pre class="prettyprint">
+$("#myDropdown").ddslick({
+    onSelected: function(selectedData){
+        //callback function: do something with selectedData;
+    }
+});
+</pre>
+                </li>
+            </ol>
+            <div class="spacer"></div>
+        </article>
+
+        <!-- Plugin Options -->
+
+        <article>
+            <h2>Plugin Options:</h2>
+            <ul id="options">
+                <li><strong>data</strong> <span class="weak">default value "[]"</span><br /> JSON data to populate dropdown plugin options</li>
+                <li><strong>width</strong> <span class="weak">default value "260"</span><br /> Width in px for the dropdown plugin i.e. 400, or "400px".</li>
+                <li><strong>height</strong> <span class="weak">default value "null"</span><br /> Height in px for the dropdown options i.e. 300, or "300px". The scroller will automatically be added if options overflows the height.</li>
+                <li><strong>background</strong> <span class="weak">default value "#eee"</span><br /> Background for your dropdown. You can use the css shorthand notation for setting backgrounds<br /> i.e. <code>background: #CCCCCC;</code> or <code>background: transparent url("your-background-image.jpg") no-repeat 0 0 scroll</code></li>
+                <li><strong>selectText</strong> <span class="weak">default value "Select..."</span><br /> Set default text to display when no option is selected.</li>
+                <li><strong>imagePosition</strong> <span class="weak">default value "left"</span><br /> Set positioning of image in your dropdown, left or right. See demo 5 above.</li>
+                <li><strong>showSelectedHTML</strong> <span class="weak">default value "true"</span><br /> Set what to be displayed as selected. Setting false will only display title. Setting true displays title, description and image.</li>
+                <li><strong>defaultSelectedIndex</strong> <span class="weak">default value "null"</span><br /> Set the default index to be selected when initializing plugin. If not provided then <code>selectText</code> will be displayed. See demo 4 above.</li>
+                <li><strong>truncateDescription</strong> <span class="weak">default value "true"</span><br /> Truncate the long description when selected. Options however display the full text. The plugin still returns complete description on selection. See demo 6 above.</li>
+                <li><strong>onSelected</strong> <span class="weak">default value "function () { }"</span><br /> Callback function when an option is selected in the dropdown. See demo 3 above.</li>
+                <li><strong>keepJSONItemsOnTop</strong> <span class="weak">default value "false"</span><br /> You can use both HTML select elements and JSON data to populate your dropdown. By default JSON items are added in dropdown after the select options.</li>
+            </ul>
+            <h2>Plugin Methods:</h2>
+            <ul>
+                <li><strong>select</strong><br /> You may use plugin’s select method like <code>$("#demoSetSelected").ddslick("select", {index: i });</code><br /> to select a particular index. See demo 3 above.</li>
+                <li><strong>select</strong><br /> You may use plugin’s open method like <code>$("#demoSetSelected").ddslick("open");</code><br /> to open dropdown options.</li>
+                <li><strong>close</strong><br /> You may use plugin’s close method like <code>$("#demoSetSelected").ddslick("close");</code><br /> to close dropdown options.</li>
+                <li><strong>destroy</strong><br /> You may use plugin’s destroy method to restore to original element like <code>$("#demoSetSelected").ddslick("destroy");</code><br /> If you had selected an option with ddSlick, the <code>selected</code> attribute will be passed to the original HTML select, so you don’t loose the selection. This will also unbind any event handlers attached by plugin to this control. See demo 2 above.</li>
+            </ul>
+        </article>
+    </section>
+</section>
+
+<script>
+$(document).ready(function () {
+
+    //Show or hide source for the demo
+    $("#close-modal").on("click", function () {
+        $("#dd-modal").effect("drop");
+    });
+
+    //Dropdown plugin data
+    var ddData = [
+        {
+            text: "Facebook",
+            value: "FB",
+            description: "Description with Facebook",
+            imageSrc: "http://i.imgur.com/XkuTj3B.png"
+        },
+        {
+            text: "Twitter",
+            value: "TWT",
+            description: "Description with Twitter",
+            imageSrc: "http://i.imgur.com/8ScLNnk.png"
+        },
+        {
+            text: "LinkedIn",
+            value: "LI",
+            description: "Description with LinkedIn",
+            imageSrc: "http://i.imgur.com/aDNdibj.png"
+        },
+        {
+            text: "Foursquare",
+            value: "FSQ",
+            description: "Description with Foursquare",
+            imageSrc: "http://i.imgur.com/kFAk2DX.png"
+        }
+    ];
+
+    //Demo 1---------------------
+    $("#demoBasic").ddslick({
+        data: ddData,
+        selectText: "Select your favorite social network"
+    });
+
+    //Make it slick!
+    $("#make-it-slick").on("click", function () {
+        $("#demo-htmlselect").ddslick();
+    });
+
+    //Restore Original
+    $("#restore").on("click", function () {
+        $("#demo-htmlselect").ddslick("destroy");
+    });
+
+    //Demo 2----------------------
+    $("#demoShowSelected").ddslick({
+        data: ddData,
+        selectText: "Select your favorite social network"
+    });
+
+    $("#showSelectedData").on("click", function () {
+        var ddData = $("#demoShowSelected").data("ddslick");
+        displaySelectedData("2: Getting Selected Dropdown Data", ddData);
+    });
+
+    //Demo 3 -------------------------
+    $("#demoSetSelected").ddslick({
+        data: ddData,
+        selectText: "Select your favorite social network"
+    });
+
+    $("#btnSetSelected").on("click", function () {
+        var i = $("#setIndex").val();
+        if (i >= 0 && i < 5)
+            $("#demoSetSelected").ddslick("select", { index: i });
+        else
+            $("#setIndexMsg").effect("highlight", 2400);
+    });
+
+    //Demo 4--------------------------
+    $("#demoCallback").ddslick({
+        data: ddData,
+        selectText: "Select your favorite social network",
+        onSelected: function (data) {
+            displaySelectedData("3: Callback Function on Dropdown Selection", data);
+        }
+    });
+
+    //Demo 5 -------------------------
+    $("#demoDefaultSelection").ddslick({
+        data: ddData,
+        defaultSelectedIndex: 2
+    });
+
+    //Demo 6---------------------------
+    $("#demoImageRight").ddslick({
+        data: ddData,
+        imagePosition: "right",
+        selectText: "Select your favorite social network"
+    });
+
+    //Demo 7--------------------------
+
+    //Dropdown plugin data
+    var ddDataLongDescription = [
+        {
+            text: "Facebook",
+            value: 1,
+            description: "Description with Facebook",
+            imageSrc: "http://i.imgur.com/XkuTj3B.png"
+        },
+        {
+            text: "Twitter",
+            value: 2,
+            description: "Twitter is an online social networking service and microblogging service that enables its users to send and read text-based posts of up to 140 characters, known as 'tweets'. It was created in March 2006 by Jack Dorsey and launched that July.",
+            imageSrc: "http://i.imgur.com/8ScLNnk.png"
+        },
+        {
+            text: "LinkedIn",
+            value: 3,
+            description: "Description with LinkedIn",
+            imageSrc: "http://i.imgur.com/aDNdibj.png"
+        },
+        {
+            text: "Foursquare",
+            value: 4,
+            description: "Description with Foursquare",
+            imageSrc: "http://i.imgur.com/kFAk2DX.png"
+        }
+    ];
+
+    $("#demoTruncated").ddslick({
+        data: ddDataLongDescription,
+        selectText: "Select your favorite social network",
+        truncateDescription: true,
+        onSelected: function (data) {
+            displaySelectedData("5: Dropdown with truncated description", data);
+        }
+    });
+
+    //Demo 8-------------------------
+
+    var ddBasic = [
+        { text: "Facebook", value: 1, },
+        { text: "Twitter", value: 2, },
+        { text: "LinkedIn", value: 3, },
+        { text: "Foursquare", value: 4, }
+    ];
+
+    $("#divNoImage").ddslick({
+        data: ddBasic,
+        selectText: "Select your favorite social network"
+    });
+
+    //Callback function:
+    function displaySelectedData(demoIndex, ddData) {
+        $("#dd-display-data").html("<h3>Data from demo " + demoIndex + "</h3>");
+        $("#dd-display-data").append("<strong>selectedIndex:</strong> " + ddData.selectedIndex + "<br/><strong>selectedItem:</strong> Check your browser console for selected 'li' html element");
+
+        if (ddData.selectedData) {
+            $("#dd-display-data").append(
+                "<br/><br/><strong>selectedData:</strong><br/><strong>Text:</strong> " + ddData.selectedData.text +
+                "<br/><strong>Value:</strong>  " + ddData.selectedData.value +
+                "<br/><strong>Description:</strong>  " + ddData.selectedData.description +
+                "<br/><strong>ImageSrc:</strong>  " + ddData.selectedData.imageSrc)
+        }
+        $("#dd-modal").fadeIn();
+    }
+
+    $("#showSampleData").on("click", function () {
+        $("#dd-display-data").html("<pre>" + $("#JSONData").html() + "</pre>");
+        $("#dd-modal").fadeIn();
+    });
+
+    $("#showSampleSelectList").on("click", function () {
+        $("#dd-display-data").html("<pre>" + $("#sampleHtmlSelect").html() + "</pre>");
+        $("#dd-modal").fadeIn();
+    });
+
+});
+</script>
+
+<!-- <script src="https://cdn.rawgit.com/jsmodules/ddslick/master/dist/jquery.ddslick.min.js"></script> -->
+<!-- <script src="../jquery.ddslick.min.js"></script> -->
+<script src="../jquery.ddslick.js"></script>
+</body>
+</html>
