@@ -29,7 +29,7 @@
         data: [],
         keepJSONItemsOnTop: false,
         animationTime: 50,
-        width: 260,
+        width: "20em",
         height: null,
         background: "#eee",
         selectText: "",
