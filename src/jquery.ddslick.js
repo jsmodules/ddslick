@@ -29,7 +29,7 @@
         data: [],
         keepJSONItemsOnTop: false,
         animationTime: 50,
-        width: 260,
+        width: "20em",
         height: null,
         background: "#eee",
         selectText: "",
@@ -65,7 +65,7 @@
         ".dd-option-selected { background:#f6f6f6; }" +
         ".dd-option-image, .dd-selected-image { vertical-align:middle; float:left; margin-right:5px; max-width:64px;}" +
         ".dd-image-right { float:right; margin-right:15px; margin-left:5px;}" +
-        ".dd-container{ position:relative;}​ .dd-selected-text { font-weight:bold}​</style>";
+        ".dd-container{ position:relative;} .dd-selected-text { font-weight:bold}</style>";
 
     //Public methods
     methods.init = function (userOptions) {

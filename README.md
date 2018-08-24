@@ -6,6 +6,7 @@
 [![Bower](https://img.shields.io/bower/v/jquery-ddslick.svg?style=flat-square)](http://bower.io/search/?q=ddslick)
 [![Bower](https://img.shields.io/bower/l/jquery-ddslick.svg?style=flat-square)](https://www.mozilla.org/en-US/MPL/2.0/)
 [![npm](https://img.shields.io/npm/v/ddslick.svg?style=flat-square)](https://www.npmjs.com/package/ddslick)
+[![jsDelivr](https://data.jsdelivr.com/v1/package/npm/ddslick/badge)](https://www.jsdelivr.com/package/npm/ddslick)
 
 About this plug-in:
 
