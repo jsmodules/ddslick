@@ -43,21 +43,24 @@
     };
 
     var closeListenerInitialized = false;
-    var ddSelectHtml = "<div class='dd-select'><input class='dd-selected-value' type='hidden' /><a class='dd-selected'></a><span class='dd-pointer dd-pointer-down'></span></div>";
+    var ddSelectHtml = "<div class='dd-select'><input class='dd-selected-value' type='hidden' /><button type='button' class='dd-selected'></button><span class='dd-pointer dd-pointer-down'></span></div>";
     var ddOptionsHtml = "<ul class='dd-options'></ul>";
 
     //CSS for ddSlick
     var ddslickCSS = "<style id='css-ddslick' type='text/css'>" +
         ".dd-select{ border-radius:2px; border:solid 1px #ccc; position:relative; cursor:pointer;}" +
         ".dd-desc { color:#aaa; display:block; overflow: hidden; font-weight:normal; line-height: 1.4em; }" +
-        ".dd-selected{ overflow:hidden; display:block; padding:10px; font-weight:bold;}" +
+        ".dd-selected{ position:relative; overflow:hidden; display:block; padding:10px; font-weight:bold; width:100%; text-align:left;}" +
+        ".dd-selected:focus { z-index:2001; }" +
         ".dd-pointer{ width:0; height:0; position:absolute; right:10px; top:50%; margin-top:-3px;}" +
+        ".dd-selected:focus + .dd-pointer{ z-index:2002; }" +
         ".dd-pointer-down{ border:solid 5px transparent; border-top:solid 5px #000; }" +
         ".dd-pointer-up{border:solid 5px transparent !important; border-bottom:solid 5px #000 !important; margin-top:-8px;}" +
-        ".dd-options{ border:solid 1px #ccc; border-top:none; list-style:none; box-shadow:0px 1px 5px #ddd; display:none; position:absolute; z-index:2000; margin:0; padding:0;background:#fff; overflow:auto;}" +
-        ".dd-option{ padding:10px; display:block; border-bottom:solid 1px #ddd; overflow:hidden; text-decoration:none; color:#333; cursor:pointer;-webkit-transition: all 0.25s ease-in-out; -moz-transition: all 0.25s ease-in-out;-o-transition: all 0.25s ease-in-out;-ms-transition: all 0.25s ease-in-out; }" +
-        ".dd-options > li:last-child > .dd-option{ border-bottom:none;}" +
-        ".dd-option:hover{ background:#f3f3f3; color:#000;}" +
+        ".dd-options{ border:solid 1px #ccc; border-top:none; list-style:none; box-shadow:0px 1px 5px #ddd; display:none; position:absolute; z-index:2000; margin:0; padding:0;background:#fff; overflow:visible;}" +
+        ".dd-options:focus{ outline:0; }" +
+        ".dd-option{ padding:10px; display:block; width:100%; text-align:left; border-bottom:solid 1px #ddd; overflow:visible; text-decoration:none; color:#333; cursor:pointer;-webkit-transition: all 0.25s ease-in-out; -moz-transition: all 0.25s ease-in-out;-o-transition: all 0.25s ease-in-out;-ms-transition: all 0.25s ease-in-out; box-sizing:border-box;}" +
+        ".dd-options > .dd-option:last-child { border-bottom:none;}" +
+        ".dd-option:hover, .dd-option:active, .dd-option:focus{ background:#f3f3f3; color:#000; z-index:2001;}" +
         ".dd-selected-description-truncated { text-overflow: ellipsis; white-space:nowrap; }" +
         ".dd-option-selected { background:#f6f6f6; }" +
         ".dd-option-image, .dd-selected-image { vertical-align:middle; float:left; margin-right:5px; max-width:64px;}" +
@@ -127,6 +130,17 @@
                 //Get newly created ddOptions and ddSelect to manipulate
                 var ddOptions = obj.find(".dd-options");
                 ddSelect = obj.find(".dd-select");
+                var ddSelected = obj.find(".dd-selected");
+
+                // Add accessibility controls.
+                ddSelected.attr("aria-haspopup", "listbox");
+                ddSelected.attr("aria-expanded", "false");
+                ddSelected.attr("aria-controls", "dd-options-" + settingsId);
+                ddOptions.attr("id", "dd-options-" + settingsId);
+                ddOptions.attr("role", "listbox");
+                ddOptions.attr("tabindex", "-1");
+                ddOptions.attr("aria-label", "select options");
+                ddOptions.attr("aria-hidden", "true");
 
                 //Set widths
                 ddOptions.css({ width: options.width });
@@ -140,13 +154,78 @@
                 //Add ddOptions to the container. Replace with template engine later.
                 $.each(options.data, function (index, item) {
                     if (item.selected) options.defaultSelectedIndex = index;
-                    var ddList = $("<li>").append($("<a>").addClass("dd-option"));
-                    var ddOption = ddList.find("a");
+                    var ddOption = $("<li role='option'>").addClass("dd-option").attr("id", "dd-option-" + settingsId + "-" + index);
                     if(item.value) ddOption.append($("<input>").addClass("dd-option-value").attr("type", "hidden").val(item.value));
                     if(item.imageSrc) ddOption.append($("<img>").attr("src", item.imageSrc).addClass("dd-option-image" + (options.imagePosition === "right" ? " dd-image-right" : "")));
                     if(item.text) ddOption.append($("<label>").addClass("dd-option-text").text(item.text));
                     if(item.description) ddOption.append($("<small>").addClass("dd-option-description dd-desc").text(item.description));
-                    ddOptions.append(ddList);
+                    ddOptions.append(ddOption);
+                });
+
+                // Watch for and handle keypress when popup options list is open.
+                ddOptions.keydown(function(event) {
+                    var ddOptions = $(this);
+                    if (ddOptions.attr("aria-hidden") != "false") {
+                        return;
+                    }
+                    var selectedClass = "dd-option-selected",
+                        selectedLi = [],
+                        currentLi = $("." + selectedClass, ddOptions);
+                    switch(event.key) {
+
+                    // Up or left arrow moves to the previous option.
+                    case "ArrowLeft":
+                    case "ArrowUp":
+                        if (!currentLi.length) {
+                            selectedLi = $(".dd-option:first-child");
+                            selectedLi.addClass(selectedClass);
+                            ddOptions.attr("aria-activedescendant", selectedLi.attr("id"));
+                        }
+                        else if (!currentLi.is(":first-child")) {
+                            selectedLi = currentLi
+                                .removeClass(selectedClass)
+                                .prev()
+                                .addClass(selectedClass);
+                            ddOptions.attr("aria-activedescendant", selectedLi.attr("id"));
+                        }
+                        return false;
+
+                    // Down or right arrow moves to the next option.
+                    case "ArrowRight":
+                    case "ArrowDown":
+                        if (!currentLi.length) {
+                            selectedLi = $(".dd-option:first-child");
+                            selectedLi.addClass(selectedClass);
+                            ddOptions.attr("aria-activedescendant", selectedLi.attr("id"));
+                        }
+                        else if (!currentLi.is(":last-child")) {
+                            selectedLi = currentLi
+                                .removeClass(selectedClass)
+                                .next()
+                                .addClass(selectedClass);
+                            ddOptions.attr("aria-activedescendant", selectedLi.attr("id"));
+                        }
+                        return false;
+
+                    // Enter or spacebar selects the current item and closes the popup.
+                    case "Enter":
+                    case " ":
+                        if (currentLi.length) {
+                            selectIndex(obj, currentLi.index(), true);
+                        }
+                        close(obj);
+                        ddSelected.focus();
+                        return false;
+
+                    // Escape closes the popup without modifying the selection.
+                    case "Escape":
+                        close(obj);
+                        ddSelected.focus();
+                        return false;
+                    }
+
+                    // All other keys fall through.
+                    return;
                 });
 
                 //Save plugin data.
@@ -179,7 +258,16 @@
 
                 //Selecting an option
                 obj.find(".dd-option").on("click.ddslick", function() {
-                    selectIndex(obj, $(this).closest("li").index(), true);
+                    selectIndex(obj, $(this).index(), true);
+                });
+
+                // Keyboard navigating away from the widget.
+                obj.find(".dd-options").on("focusout.ddslick", function() {
+                    setTimeout( function() {
+                        if (obj.find(".dd-options").has(document.activeElement).length == 0) {
+                            close(obj);
+                        }
+                    }, 50);
                 });
 
                 //Click anywhere to close
@@ -191,7 +279,8 @@
                         closeListenerInitialized = true;
                         $("body").on("click", function () {
                             $(".dd-open").removeClass("dd-open");
-                            $(".dd-click-off-close").slideUp(options.animationTime).siblings(".dd-select").find(".dd-pointer").removeClass("dd-pointer-up");
+                            $(".dd-selected").attr("aria-expanded", "false");
+                            $(".dd-click-off-close").slideUp(options.animationTime).attr("aria-hidden", "true").siblings(".dd-select").find(".dd-pointer").removeClass("dd-pointer-up");
                         });
                     }
                 }
@@ -263,19 +352,20 @@
 
         //Get required elements
         var ddSelected = obj.find(".dd-selected"),
+            ddOptions = obj.find(".dd-options"),
             ddSelectedValue = ddSelected.siblings(".dd-selected-value"),
             selectedOption = obj.find(".dd-option").eq(index),
-            selectedLiItem = selectedOption.closest("li"),
             settings = pluginData.settings,
             selectedData = pluginData.settings.data[index];
 
         //Highlight selected option
         obj.find(".dd-option").removeClass("dd-option-selected");
         selectedOption.addClass("dd-option-selected");
+        ddOptions.attr("aria-activedescendant", selectedOption.attr("id"));
 
         //Update or Set plugin data with new selection
         pluginData.selectedIndex = index;
-        pluginData.selectedItem = selectedLiItem;
+        pluginData.selectedItem = selectedOption;
         pluginData.selectedData = selectedData;
 
         //If set to display to full html, add html
@@ -299,6 +389,9 @@
         //Close options on selection
         close(obj);
 
+        // Re-focus on selected item.
+        obj.find(".dd-selected").focus();
+
         //Adjust appearence for selected option
         adjustSelectedHeight(obj);
 
@@ -312,6 +405,7 @@
     function open(obj) {
 
         var $this = obj.find(".dd-select"),
+            ddSelected = obj.find(".dd-selected"),
             ddOptions = $this.siblings(".dd-options"),
             ddPointer = $this.find(".dd-pointer"),
             wasOpen = ddOptions.is(":visible"),
@@ -321,16 +415,22 @@
         $(".dd-click-off-close").not(ddOptions).slideUp(settings.animationTime);
         $(".dd-pointer").removeClass("dd-pointer-up");
         $this.removeClass("dd-open");
+        ddSelected.attr("aria-expanded", "false");
+        ddOptions.attr("aria-hidden", "true");
 
         if (wasOpen) {
             ddOptions.slideUp(settings.animationTime);
             ddPointer.removeClass("dd-pointer-up");
             $this.removeClass("dd-open");
+            ddSelected.attr("aria-expanded", "false");
+            ddOptions.attr("aria-hidden", "true");
         }
         else {
             $this.addClass("dd-open");
             ddOptions.slideDown(settings.animationTime);
             ddPointer.addClass("dd-pointer-up");
+            ddSelected.attr("aria-expanded", "true");
+            ddOptions.attr("aria-hidden", "false").focus();
         }
 
         //Fix text height (i.e. display title in center), if there is no description
@@ -342,7 +442,8 @@
         //Close drop down and adjust pointer direction
         var settings = settingsMap[obj.attr("data-settings-id")];
         obj.find(".dd-select").removeClass("dd-open");
-        obj.find(".dd-options").slideUp(settings.animationTime);
+        obj.find(".dd-selected").attr("aria-expanded", "false");
+        obj.find(".dd-options").slideUp(settings.animationTime).attr("aria-hidden", "true");
         obj.find(".dd-pointer").removeClass("dd-pointer-up").removeClass("dd-pointer-up");
     }
 
